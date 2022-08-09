@@ -2,19 +2,30 @@ const http = require('http');
 
 const requestLinear = (request, response) => {
     response.setHeader('Content-Type', 'text/hmtl');
-    response.statusCode = 200;
+    response.setHeader('X-Powered-By', 'Node.js');
+    // response.statusCode = 200;
     
     const { method, url } = request;
 
     if ( url === '/' ) {
         if ( method === 'GET' ) {
-            response.end('<h1>This is home page</h1>');
+            response.statusCode = 200;
+            response.end(JSON.stringify({
+                message: 'THIS IS HOME PAGE'
+            }));
+
         } else {
-            response.end(`<h1>The home page is not found, maybe the method ${method} is not correct for this request</h1>`);
+            response.statusCode = 400;
+            response.end(JSON.stringify({
+                message: 'The home page is not found, maybe the method ${method} is not correct for this request'
+            }));
         }
     } else if ( url === '/about' ) {
         if ( method === 'GET' ) {
-            response.end('<h1>This is about page</h1>');
+            response.statusCode = 200;
+            response.end(JSON.stringify({
+                message: 'THIS IS ABOUT PAGE'
+            }));
 
         } else if ( method === 'POST' )    {
                 
@@ -27,14 +38,23 @@ const requestLinear = (request, response) => {
             request.on('end', () => {
                 body = Buffer.concat(body).toString();
                 const { name } = JSON.parse(body);
-                response.end(`<h1>Hai ${name}, this is a about page but in post Method!</h1>`);
+                response.statusCode = 200;
+                response.end(JSON.stringify({
+                    message: `Hai ${name}, this is a about page but in post Method!`
+                }));
             });
 
         } else {
-            response.end(`<h1>The home page is not found, maybe the method ${method} is not correct for this request</h1>`);
-        }
+            response.statusCode = 200;
+            response.end(JSON.stringify({
+            message: `Hai ${name}, this is a about page but in post Method!`
+        }));
+    }
     } else {
-        response.end('<h1>Page Note Found</h1>');
+        response.statusCode = 404;
+        response.end(JSON.stringify({
+            message: 'The page is not found'
+        }));
     }
 };
 
